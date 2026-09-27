@@ -90,3 +90,6 @@ Route::get('/pos/history', function () {
     return 'Halaman Riwayat Transaksi';
 })->name('pos.history');
 
+
+
+

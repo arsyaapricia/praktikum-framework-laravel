@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
 
     /**
      * Seed the application's database.
-     */ 
+     */
     public function run(): void
     {
     User::create([
@@ -22,14 +22,17 @@ class DatabaseSeeder extends Seeder
         'password' => Hash::make('password'),
         'role' => 'admin',
     ]);
- 
+
     User::create([
         'name' => 'Kasir Rina',
         'email' => 'kasir@barokahmart.test',
         'password' => Hash::make('password'),
         'role' => 'kasir',
     ]);
- 
-    $this->call(CategorySeeder::class);
+
+    $this->call([
+        CategorySeeder::class,
+        ProductSeeder::class,
+    ]);
     }
 }
