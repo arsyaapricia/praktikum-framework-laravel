@@ -1,0 +1,111 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800">Data Produk</h2>
+            <a href="{{ route('products.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm">
+                + Tambah Produk
+            </a>
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <x-card>
+
+
+                <form method="GET" action="{{ route('products.index') }}" class="flex flex-wrap gap-3 mb-4 items-center">
+
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari nama atau kode produk..."
+                        class="flex-1 rounded-md border-gray-300 shadow-sm min-w-[200px]">
+
+
+                    <select name="category_id" class="rounded-md border-gray-300">
+                        <option value="">Semua Kategori</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+
+
+                    <select name="stock_status" class="rounded-md border-gray-300">
+                        <option value="">Semua Status Stok</option>
+                        <option value="menipis" @selected(request('stock_status') == 'menipis')>Menipis (1-5)</option>
+                        <option value="habis" @selected(request('stock_status') == 'habis')>Habis (<= 0)</option>
+                    </select>
+
+                    <select name="per_page" class="rounded-md border-gray-300">
+                        <option value="10" @selected(request('per_page', 10) == 10)>10 / hal</option>
+                        <option value="25" @selected(request('per_page') == 25)>25 / hal</option>
+                        <option value="50" @selected(request('per_page') == 50)>50 / hal</option>
+                    </select>
+
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md">Cari</button>
+                    <a href="{{ route('products.index') }}" class="px-4 py-2 text-gray-500">Reset</a>
+                </form>
+
+                @if (session('success'))
+                    <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-md text-sm">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Kode</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Nama Produk</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Kategori</th>
+                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500">Harga</th>
+                            <th class="px-4 py-2 text-center text-xs font-medium text-gray-500">Stok</th>
+                            <th class="px-4 py-2 text-center text-xs font-medium text-gray-500">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse ($products as $product)
+                            <tr class="@if ($product->stock == 0) bg-red-50 @elseif ($product->stock <= 5) bg-yellow-50 @endif">
+                                <td class="px-4 py-2 text-sm">{{ $product->code }}</td>
+                                <td class="px-4 py-2 text-sm">{{ $product->name }}</td>
+                                <td class="px-4 py-2 text-sm">{{ $product->category->name }}</td>
+                                <td class="px-4 py-2 text-sm text-right">
+                                    Rp{{ number_format($product->price, 0, ',', '.') }}
+                                </td>
+                                <td class="px-4 py-2 text-sm text-center font-semibold">
+                                    {{ $product->stock }}
+                                    @if ($product->stock <= 0)
+                                        <span class="text-red-600 text-xs block font-normal">Habis</span>
+                                    @elseif ($product->stock <= 5)
+                                        <span class="text-yellow-600 text-xs block font-normal">Menipis</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-2 text-sm text-center space-x-2">
+                                    <a href="{{ route('products.edit', $product) }}" class="text-indigo-600">Edit</a>
+                                    <a href="{{ route('products.show', $product) }}" class="text-gray-600">Detail</a>
+                                    <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk {{ $product->name }}?')" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-4 py-6 text-center text-gray-500">
+                                    Belum ada data produk.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+                <div class="mt-4">
+                    {{ $products->links() }}
+                </div>
+
+            </x-card>
+        </div>
+    </div>
+</x-app-layout>
