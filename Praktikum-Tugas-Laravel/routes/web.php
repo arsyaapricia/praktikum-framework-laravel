@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PosController;
 
 Route::get('/about', function () {
     return ('Selamat datang di Toko Kelontong Jaya');
@@ -14,15 +15,11 @@ Route:: get('/home', function(){
     return '<a href="'. route('biodata') . '">Ke profile</a>';
 });
 
-// --- Pertemuan ke-3 ---
-
 use App\Http\Controllers\DashboardController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
-
-// --- Tugas 3 ---
 
 Route::get('/products', function () {
     return 'Daftar produk POS (Kopi, Teh, Roti)';
@@ -34,6 +31,7 @@ Route::post('/transactions/checkout', function () {
 // --- pertemuan ke-4 ---
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 
 Route::get('/login', [LoginController::class, 'create'])
     ->middleware('guest')
@@ -65,31 +63,30 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
 });
 
-// --- Pertemuan ke-5 ---
-// Route::get('index', function(){
-//     $posts =[
-//         (object)['title' => 'Belajar Blade', 'publised'=> true],
-//         (object)['title' => 'Belajar Blade', 'publised'=> true],
-//         (object)['title' => 'Belajar Blade', 'publised'=> true],
-//     ];
-//     return view('posts.index');
+Route::get('index', function(){
+    $posts =[
+        (object)['title' => 'Belajar Blade', 'publised'=> true],
+        (object)['title' => 'Belajar Blade', 'publised'=> true],
+        (object)['title' => 'Belajar Blade', 'publised'=> true],
+    ];
+    return view('posts.index');
 
-// });
+});
 
-// Route::view('/aboutus', 'aboutus', [
-//     'name' => 'Toko Buku',
-//     'email' => 'tokobuku@example.com'
-// ]);
+Route::view('/aboutus', 'aboutus', [
+    'name' => 'Toko Buku',
+    'email' => 'tokobuku@example.com'
+]);
 
-// --- praktikum pert-5 ---
-// use App\Http\Controllers\PosController;
-// Route::resource('pos', PosController::class);
-
-// --- Tugas-5 ---
 Route::get('/pos/history', function () {
     return 'Halaman Riwayat Transaksi';
 })->name('pos.history');
 
+//--- Import PostController ---
+use App\Http\Controllers\PostController;
+
+Route::post('/posts', [PostController::class, 'store']);
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 
 
 
